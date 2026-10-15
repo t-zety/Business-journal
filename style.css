@@ -1,0 +1,59 @@
+
+/* Business themes: change the entire app palette */
+body {
+  transition: background .25s, color .25s;
+}
+
+body[data-theme="bakery"] {
+  --bg:#fff8f2; --pink:#f8dfdc;
+  --accent:#bd7d88; --line:#f0e3dc;
+}
+body[data-theme="cakery"] {
+  --bg:#fbf6ff; --pink:#eadcf9;
+  --accent:#9874bd; --line:#e9def2;
+}
+body[data-theme="knitting"] {
+  --bg:#f5f8f0; --pink:#e0ead7;
+  --accent:#718d69; --line:#e0e8d9;
+}
+body[data-theme="writing"] {
+  --bg:#f3f7fc; --pink:#dce8f7;
+  --accent:#6589b4; --line:#dce6f0;
+}
+body[data-theme="teaching"] {
+  --bg:#fffbed; --pink:#f8ebbd;
+  --accent:#b49440; --line:#efe6c9;
+}
+body[data-theme="food"] {
+  --bg:#fff6ef; --pink:#ffdfc9;
+  --accent:#cf8658; --line:#f1e1d5;
+}
+body[data-theme="crafts"] {
+  --bg:#faf5ff; --pink:#e9ddf7;
+  --accent:#9877b5; --line:#e9dff0;
+}
+body[data-theme="retail"] {
+  --bg:#f1faf7; --pink:#d6eee6;
+  --accent:#568e7d; --line:#dcece6;
+}
+body[data-theme="services"] {
+  --bg:#f3f8ff; --pink:#dce8fb;
+  --accent:#6485ba; --line:#dce6f4;
+}
+body[data-theme="general"] {
+  --bg:#fffaf5; --pink:#f8e6e5;
+  --accent:#bc7888; --line:#f0e6df;
+}
+
+body[data-theme] header {
+  background:var(--pink);
+}
+body[data-theme] .card {
+  border-color:var(--line);
+}
+body[data-theme] button:not(.secondary):not(.danger) {
+  background:var(--accent);
+}
+body[data-theme] .quote {
+  background:var(--pink);
+}

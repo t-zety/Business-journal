@@ -1,0 +1,529 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Petit Ledger ♡</title>
+<style>
+:root {
+  --bg:#fffaf5; --card:#ffffff; --ink:#51463f;
+  --muted:#998b81; --pink:#f4cbd2; --accent:#bc7888;
+  --green:#7c9c83; --line:#f0e6df;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,sans-serif;
+  font-size:14px;
+}
+header {
+  padding:23px 18px 18px; background:#f8e6e5;
+  border-radius:0 0 28px 28px;
+}
+.brand { font-size:25px; font-weight:800; }
+header p { margin:5px 0 14px; color:#8e7273; }
+main { max-width:760px; margin:auto; padding:16px; }
+h2 { font-size:17px; margin:19px 0 12px; }
+h3 { font-size:14px; margin:0 0 8px; }
+.grid {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.card {
+  background:var(--card); padding:15px; border-radius:18px;
+  border:1px solid var(--line); min-width:0;
+}
+.metric { font-size:20px; font-weight:800; margin-top:7px;
+  overflow-wrap:anywhere; }
+.small { color:var(--muted); font-size:12px; }
+input,select,textarea,button {
+  font:inherit; border-radius:11px; padding:11px;
+}
+input,select,textarea {
+  border:1px solid var(--line); background:#fffdfa;
+  color:var(--ink); width:100%; min-width:0;
+}
+textarea { resize:vertical; }
+button {
+  border:0; background:var(--accent); color:white;
+  font-weight:700; cursor:pointer;
+}
+button.secondary { background:#f7e6e7; color:#865967; }
+button.danger { background:#f7eeee; color:#a24c55; }
+button:active { opacity:.8; }
+.field { display:grid; gap:5px; margin-bottom:11px; }
+label { font-size:12px; color:var(--muted); }
+.formgrid {
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.full { grid-column:1/-1; }
+.actions { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+.actions button { padding:8px 10px; font-size:12px; }
+.tabs {
+  display:flex; gap:8px; overflow-x:auto; padding:12px 0;
+}
+.tabs button { white-space:nowrap; }
+.tabs button.active { background:#dca9b4; }
+.entry {
+  border-bottom:1px solid var(--line); padding:13px 0;
+}
+.entry:last-child { border-bottom:0; }
+.entrytop { display:flex; justify-content:space-between; gap:10px; }
+.entrytop strong { overflow-wrap:anywhere; }
+.income { color:var(--green); }
+.expense { color:#c07878; }
+.quote {
+  background:#f8eee2; border-radius:18px;
+  padding:16px; line-height:1.6; margin-top:14px;
+}
+.hidden { display:none; }
+footer { text-align:center; padding:25px; color:var(--muted); }
+@media(max-width:420px) {
+  .metric { font-size:18px; }
+  main { padding:12px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">Petit Ledger ♡</div>
+  <p>Little business, big dreams.</p>
+  <div class="field">
+    <label for="business">My business journal</label>
+    <input id="business" placeholder="e.g. Zety & Boulangerie">
+  </div>
+  <div class="field">
+    <label for="theme">Choose your business theme</label>
+    <select id="theme">
+      <option value="bakery">🥐 Bakery & Bread</option>
+      <option value="cakery">🍰 Cakery & Desserts</option>
+      <option value="knitting">🧶 Knitting & Crochet</option>
+      <option value="writing">✍️ Writing & Publishing</option>
+      <option value="teaching">📚 Teaching & Tuition</option>
+      <option value="food">🍓 Food & Beverages</option>
+      <option value="crafts">🎨 Handmade Crafts</option>
+      <option value="retail">🛍️ Retail & Shopping</option>
+      <option value="services">💼 Services</option>
+      <option value="general">🌷 General Business</option>
+    </select>
+  </div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="active" data-tab="home">♡ Overview</button>
+    <button class="secondary" data-tab="journal">📔 Journal</button>
+    <button class="secondary" data-tab="report">📊 Reports</button>
+    <button class="secondary" data-tab="settings">⚙️ Data</button>
+  </div>
+
+  <section id="home">
+    <div class="grid">
+      <div class="card">
+        <div class="small">Total income</div>
+        <div class="metric income" id="sales">RM0.00</div>
+      </div>
+      <div class="card">
+        <div class="small">Total expenses</div>
+        <div class="metric expense" id="costs">RM0.00</div>
+      </div>
+      <div class="card">
+        <div class="small">Net profit / loss</div>
+        <div class="metric" id="profit">RM0.00</div>
+      </div>
+      <div class="card">
+        <div class="small">Cash movement</div>
+        <div class="metric" id="cash">RM0.00</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <h3>♡ Quick transaction</h3>
+      <form id="txform">
+        <input id="txid" type="hidden">
+        <div class="formgrid">
+          <div class="field">
+            <label for="date">Date</label>
+            <input id="date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="kind">Transaction type</label>
+            <select id="kind">
+              <option value="income">Income / Credit</option>
+              <option value="expense">Expense / Debit</option>
+              <option value="ownerin">Owner investment</option>
+              <option value="ownerout">Owner withdrawal</option>
+              <option value="loanin">Loan received</option>
+              <option value="loanout">Loan repayment</option>
+              <option value="receivable">Credit sale (unpaid)</option>
+              <option value="payable">Credit purchase (unpaid)</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="description">What was it for?</label>
+            <input id="description" placeholder="e.g. Sold 6 focaccia" required>
+          </div>
+          <div class="field">
+            <label for="amount">Amount (RM)</label>
+            <input id="amount" type="number" min="0.01"
+              step="0.01" placeholder="0.00" required>
+          </div>
+          <div class="field">
+            <label for="category">Category</label>
+            <select id="category">
+              <option>Sales</option><option>Ingredients</option>
+              <option>Packaging</option><option>Equipment</option>
+              <option>Delivery</option><option>Marketing</option>
+              <option>Utilities</option><option>Fees</option>
+              <option>Owner capital</option><option>Owner drawings</option>
+              <option>Loan</option><option>Customer debt</option>
+              <option>Supplier debt</option><option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="method">Payment method</label>
+            <select id="method">
+              <option>Cash</option><option>Bank transfer</option>
+              <option>QR / e-wallet</option><option>Card</option>
+              <option>Unpaid</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="status">Payment status</label>
+            <select id="status">
+              <option value="paid">Paid / received</option>
+              <option value="unpaid">Not yet paid</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="notes">Notes & little reminders</label>
+            <textarea id="notes" rows="2"
+              placeholder="Supplier, order details, ideas..."></textarea>
+          </div>
+        </div>
+        <div class="actions">
+          <button type="submit" id="savebtn">Save transaction ♡</button>
+          <button type="button" class="secondary hidden" id="cancel">
+            Cancel edit
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="quote">
+      <strong id="tiptitle">Your little money tip 🌷</strong>
+      <div id="tip"></div>
+      <p id="quote" style="margin-bottom:0"></p>
+    </div>
+  </section>
+
+  <section id="journal" class="hidden">
+    <h2>My daily journal 📔</h2>
+    <div class="card">
+      <div class="field">
+        <label for="filter">Find transactions by month</label>
+        <input id="filter" type="month">
+      </div>
+      <div id="entries"></div>
+    </div>
+  </section>
+
+  <section id="report" class="hidden">
+    <h2>My business report 🌷</h2>
+    <div class="card">
+      <div class="field">
+        <label for="reportmonth">Choose month</label>
+        <input id="reportmonth" type="month">
+      </div>
+      <div id="reportcontent"></div>
+    </div>
+  </section>
+
+  <section id="settings" class="hidden">
+    <h2>My data & backup</h2>
+    <div class="card">
+      <p>Download a copy of your records regularly. Your journal is saved in this browser.</p>
+      <div class="actions">
+        <button id="export">Download CSV</button>
+        <button class="secondary" id="backup">Backup JSON</button>
+        <button class="secondary" id="restore">Import backup</button>
+        <input id="importfile" type="file" accept=".json"
+          class="hidden">
+      </div>
+      <p class="small">This starter version stores data on your device.
+      It does not sync between different users or devices.</p>
+      <button class="danger" id="clear">Delete all records</button>
+    </div>
+  </section>
+</main>
+<footer>Made with a little love & lots of ambition ♡</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const KEY = 'petit-ledger-v1';
+const PROFILE = 'petit-ledger-profile-v1';
+const today = new Date();
+const monthNow = today.toISOString().slice(0,7);
+$('date').value = today.toISOString().slice(0,10);
+$('filter').value = monthNow;
+$('reportmonth').value = monthNow;
+
+let records = [];
+try { records = JSON.parse(localStorage.getItem(KEY) || '[]'); }
+catch { records = []; }
+
+let profile = {};
+try { profile = JSON.parse(localStorage.getItem(PROFILE) || '{}'); }
+catch { profile = {}; }
+
+$('business').value = profile.business || '';
+$('theme').value = profile.theme || 'bakery';
+
+const money = n => 'RM' + Number(n || 0).toLocaleString(
+  'en-MY',{minimumFractionDigits:2,maximumFractionDigits:2}
+);
+const sum = list => list.reduce((a,r)=>a+Number(r.amount),0);
+
+function persist() {
+  localStorage.setItem(KEY, JSON.stringify(records));
+  localStorage.setItem(PROFILE, JSON.stringify({
+    business:$('business').value, theme:$('theme').value
+  }));
+}
+$('business').addEventListener('input', persist);
+$('theme').addEventListener('change', () => {
+  persist(); showTip();
+});
+
+function paid(r) { return r.status === 'paid'; }
+function isIncome(r) { return r.kind === 'income'; }
+function isExpense(r) { return r.kind === 'expense'; }
+
+function cashEffect(r) {
+  if (!paid(r)) return 0;
+  if (['income','ownerin','loanin'].includes(r.kind)) return r.amount;
+  if (['expense','ownerout','loanout'].includes(r.kind)) return -r.amount;
+  return 0;
+}
+function render() {
+  const income = sum(records.filter(isIncome));
+  const expense = sum(records.filter(isExpense));
+  const profit = income - expense;
+  const cash = sum(records.map(r=>({amount:cashEffect(r)})));
+
+  $('sales').textContent = money(income);
+  $('costs').textContent = money(expense);
+  $('profit').textContent = money(profit);
+  $('profit').style.color = profit < 0 ? '#c07878' : '#7c9c83';
+  $('cash').textContent = money(cash);
+
+  renderEntries();
+  renderReport();
+  showTip();
+}
+
+function renderEntries() {
+  const month = $('filter').value;
+  const list = records.filter(r=>!month || r.date.startsWith(month))
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  const root = $('entries');
+  root.replaceChildren();
+
+  if (!list.length) {
+    root.textContent = 'No entries yet. Every little transaction counts ♡';
+    return;
+  }
+  list.forEach(r=>{
+    const item = document.createElement('div');
+    item.className = 'entry';
+    const top = document.createElement('div');
+    top.className = 'entrytop';
+    const left = document.createElement('div');
+    const title = document.createElement('strong');
+    title.textContent = r.description;
+    const meta = document.createElement('div');
+    meta.className = 'small';
+    meta.textContent = `${r.date} · ${r.category} · ${r.method} · ${r.status}`;
+    left.append(title,meta);
+    const amount = document.createElement('strong');
+    amount.className = ['income','ownerin','loanin'].includes(r.kind)
+      ? 'income' : ['expense','ownerout','loanout'].includes(r.kind)
+      ? 'expense' : '';
+    amount.textContent = money(r.amount);
+    top.append(left,amount);
+    item.append(top);
+
+    if(r.notes) {
+      const note = document.createElement('p');
+      note.className='small';
+      note.textContent=r.notes;
+      item.append(note);
+    }
+    const actions = document.createElement('div');
+    actions.className='actions';
+    const edit = document.createElement('button');
+    edit.className='secondary'; edit.textContent='Edit';
+    edit.onclick=()=>editRecord(r.id);
+    const del = document.createElement('button');
+    del.className='danger'; del.textContent='Delete';
+    del.onclick=()=>{
+      if(confirm('Delete this entry?')) {
+        records=records.filter(x=>x.id!==r.id);
+        persist();render();
+      }
+    };
+    actions.append(edit,del);item.append(actions);root.append(item);
+  });
+}
+
+function renderReport() {
+  const month=$('reportmonth').value;
+  const list=records.filter(r=>!month||r.date.startsWith(month));
+  const income=sum(list.filter(isIncome));
+  const expense=sum(list.filter(isExpense));
+  const cash=sum(list.map(r=>({amount:cashEffect(r)})));
+  const unpaidIn=sum(list.filter(r=>r.kind==='receivable'&&!paid(r)));
+  const unpaidOut=sum(list.filter(r=>r.kind==='payable'&&!paid(r)));
+  $('reportcontent').innerHTML='';
+  const rows=[
+    ['Sales income',income],['Business expenses',expense],
+    ['Profit / loss before other adjustments',income-expense],
+    ['Cash movement this month',cash],
+    ['Unpaid customer sales recorded',unpaidIn],
+    ['Unpaid supplier purchases recorded',unpaidOut]
+  ];
+  rows.forEach(([label,value])=>{
+    const row=document.createElement('p');
+    row.style.cssText='display:flex;justify-content:space-between;gap:12px';
+    const l=document.createElement('span');l.textContent=label;
+    const v=document.createElement('strong');v.textContent=money(value);
+    row.append(l,v);$('reportcontent').append(row);
+  });
+  const note=document.createElement('p');
+  note.className='small';
+  note.textContent='Profit here is recorded income minus recorded expenses. It is not yet a full accounting statement.';
+  $('reportcontent').append(note);
+}
+
+function editRecord(id) {
+  const r=records.find(x=>x.id===id);if(!r)return;
+  ['date','kind','description','amount','category','method','status','notes']
+    .forEach(k=>$(k).value=r[k] ?? '');
+  $('txid').value=id;
+  $('savebtn').textContent='Update transaction ♡';
+  $('cancel').classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function resetForm() {
+  $('txform').reset();
+  $('date').value=today.toISOString().slice(0,10);
+  $('txid').value='';
+  $('savebtn').textContent='Save transaction ♡';
+  $('cancel').classList.add('hidden');
+}
+$('cancel').onclick=resetForm;
+
+$('txform').addEventListener('submit',e=>{
+  e.preventDefault();
+  const amount=Number($('amount').value);
+  if(!Number.isFinite(amount)||amount<=0)return;
+  const id=$('txid').value;
+  const record={
+    id:id||String(Date.now())+Math.random().toString(16).slice(2),
+    date:$('date').value,kind:$('kind').value,
+    description:$('description').value.trim(),
+    amount,category:$('category').value,
+    method:$('method').value,status:$('status').value,
+    notes:$('notes').value.trim()
+  };
+  if(id) records=records.map(r=>r.id===id?record:r);
+  else records.push(record);
+  persist();resetForm();render();
+});
+
+function showTip() {
+  const tips=[
+    'Record every ingredient, packaging item and delivery cost. Small costs love hiding in plain sight.',
+    'Separate your personal spending from business money whenever possible.',
+    'Calculate the cost per item before deciding your selling price.',
+    'Keep a small reserve for restocking ingredients and unexpected expenses.',
+    'Check unpaid customer invoices and supplier bills every week.'
+  ];
+  const quotes=[
+    'Small steps still build something beautiful.',
+    'Your business deserves numbers as well as dreams.',
+    'Progress, petit à petit.',
+    'A sale is lovely. Knowing your profit is lovelier.'
+  ];
+  const day=Math.floor(Date.now()/86400000);
+  $('tip').textContent=tips[day%tips.length];
+  $('quote').textContent='“'+quotes[day%quotes.length]+'”';
+  $('tiptitle').textContent={
+    bakery:'🥐 Bakery money tip',
+    cakery:'🍰 Cakery money tip',
+    knitting:'🧶 Handmade business tip',
+    writing:'✍️ Creative business tip',
+    teaching:'📚 Teaching business tip',
+    food:'🍓 Food business tip',
+    crafts:'🎨 Craft business tip',
+    retail:'🛍️ Retail business tip',
+    services:'💼 Service business tip',
+    general:'🌷 Your little money tip'
+  }[$('theme').value];
+}
+
+document.querySelectorAll('[data-tab]').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('[data-tab]').forEach(b=>{
+      b.classList.toggle('active',b===btn);
+      b.classList.toggle('secondary',b!==btn);
+    });
+    document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
+    $(btn.dataset.tab).classList.remove('hidden');
+  };
+});
+$('filter').addEventListener('change',renderEntries);
+$('reportmonth').addEventListener('change',renderReport);
+
+function download(name,content,type) {
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=name;a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+$('export').onclick=()=>{
+  const cols=['date','kind','description','amount','category','method','status','notes'];
+  const csv=[cols,...records.map(r=>cols.map(k=>r[k]??''))]
+    .map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(','))
+    .join('\r\n');
+  download('petit-ledger.csv','\uFEFF'+csv,'text/csv;charset=utf-8');
+};
+$('backup').onclick=()=>download('petit-ledger-backup.json',
+  JSON.stringify({records,profile},null,2),'application/json');
+$('restore').onclick=()=>$('importfile').click();
+$('importfile').onchange=async e=>{
+  const file=e.target.files[0];if(!file)return;
+  try {
+    const data=JSON.parse(await file.text());
+    if(!Array.isArray(data.records))throw Error('Invalid backup');
+    if(!confirm('Replace your current records with this backup?'))return;
+    records=data.records;
+    profile=data.profile||{};
+    $('business').value=profile.business||'';
+    $('theme').value=profile.theme||'bakery';
+    persist();render();
+  } catch { alert('Could not read this backup file.'); }
+  e.target.value='';
+};
+$('clear').onclick=()=>{
+  if(confirm('Delete every transaction permanently from this browser?')) {
+    records=[];persist();render();
+  }
+};
+render();
+</script>
+</body>
+</html>
